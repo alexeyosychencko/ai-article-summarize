@@ -5,7 +5,7 @@ export interface Article {
   summary: string;
 }
 
-const REACT_APP_RAPID_API_KEY = import.meta.env.REACT_APP_RAPID_API_KEY;
+const REACT_APP_RAPID_API_KEY = import.meta.env.VITE_REACT_APP_RAPID_API_KEY;
 
 export const articleApi = createApi({
   reducerPath: "articleApi",

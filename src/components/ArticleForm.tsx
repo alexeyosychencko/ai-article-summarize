@@ -1,20 +1,20 @@
-import { FormEvent } from "react";
+import { FormEvent, ReactElement, useState } from "react";
 import { linkIcon } from "../assets";
 
-const SearchForm = ({
-  handleSetArticleUrl,
+const ArticleForm = ({
   handleSubmit
 }: {
-  handleSetArticleUrl: (url: string) => void;
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
-}) => {
+  handleSubmit: (e: FormEvent<HTMLFormElement>, url: string) => void;
+}): ReactElement => {
+  const [inputVal, setinputVal] = useState<string>("");
+
   return (
     <form
       className="relative flex justify-center items-center"
       onSubmit={(e) => {
         e.preventDefault();
-
-        handleSubmit(e);
+        handleSubmit(e, inputVal);
+        setinputVal("");
       }}
     >
       <img
@@ -24,9 +24,9 @@ const SearchForm = ({
       />
       <input
         type="url"
-        placeholder="Enter a URL"
-        value=""
-        onChange={(e) => handleSetArticleUrl(e.target.value)}
+        placeholder="Paste the article link"
+        value={inputVal}
+        onChange={(e) => setinputVal(e.target.value)}
         required
         className="url_input peer"
       />
@@ -40,4 +40,4 @@ const SearchForm = ({
   );
 };
 
-export default SearchForm;
+export default ArticleForm;

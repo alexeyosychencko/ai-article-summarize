@@ -1,28 +1,80 @@
-import { FormEvent, ReactElement, useState } from "react";
-import SearchForm from "./SearchForm";
-import { Article } from "../services/article";
+import { FormEvent, ReactElement, useEffect, useState } from "react";
+import ArticleForm from "./ArticleForm";
+import { Article, useLazyGetSummaryQuery } from "../services/article";
+import { ArticleLinkCard } from "./ArticleLinkCard";
+import { Loader } from "./Loader";
+import { LoadError } from "./LoadError";
+import { ArticleSummary } from "./ArticleSummary";
 
 const Demo = (): ReactElement => {
   const [article, setArticle] = useState<Article>({
     url: "",
     summary: ""
   });
+  const [allArticles, setAllArticles] = useState<Article[]>([]);
 
-  const handleSetArticleUrl = (url: string) => {
-    setArticle({ ...article, url });
+  // useLazyGetSummaryQuery hook from get summary query
+  const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
+
+  // get the articles from the local storage
+  useEffect(() => {
+    const savedArticles = localStorage.getItem("articles");
+    if (savedArticles) {
+      setAllArticles(JSON.parse(savedArticles));
+    }
+  }, []);
+
+  // handler for submitting the article url
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>, url: string) => {
+    e.preventDefault();
+
+    // check if the article is already in the list
+    const existingArticle = allArticles.find((item) => item.url === url);
+    if (existingArticle) return setArticle(existingArticle);
+
+    // get the article summary from the api
+    const { data } = await getSummary({ articleUrl: url });
+    if (data?.summary) {
+      const newArticle = { url, summary: data.summary };
+      const updatedAllArticles = [...allArticles, newArticle];
+      setArticle(newArticle);
+      setAllArticles(updatedAllArticles);
+      // save the articles to the local storage
+      localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
+    }
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    alert("You submitted the form!");
+  const handleSetArticle = (article: Article) => {
+    setArticle({ ...article });
   };
 
   return (
     <section className="mt-16 w-full max-w-xl">
       <div className="flex flex-col w-full gap-2">
-        <SearchForm
-          handleSetArticleUrl={handleSetArticleUrl}
-          handleSubmit={handleSubmit}
-        />
+        {/* input form */}
+        <section>
+          <ArticleForm handleSubmit={handleSubmit} />
+        </section>
+        {/* brows articles */}
+        <section className="flex flex-col gap-1 max-h-60 overflow-y-auto">
+          {allArticles.map((article, index) => (
+            <ArticleLinkCard
+              key={`link-${index}`}
+              article={article}
+              handleSetArticle={handleSetArticle}
+            />
+          ))}
+        </section>
+        {/* display the article summary */}
+        <section className="my-10 max-w-full flex justify-center items-center">
+          {isFetching ? (
+            <Loader />
+          ) : error ? (
+            <LoadError error={error} />
+          ) : (
+            article.summary && <ArticleSummary summary={article.summary} />
+          )}
+        </section>
       </div>
     </section>
   );

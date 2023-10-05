@@ -12,9 +12,7 @@ export const LoadError = ({
       Well, that wasn't supposed to happen...
       <br />
       <span className="font-satoshi font-normal text-gray-700">
-        {(error as FetchBaseQueryError).status === 404
-          ? "The article was not found"
-          : (error as SerializedError).message}
+        {(error as SerializedError).message || "The article was not found"}
       </span>
     </p>
   );

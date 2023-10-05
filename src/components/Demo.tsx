@@ -1,27 +1,34 @@
 import { FormEvent, ReactElement, useEffect, useState } from "react";
 import ArticleForm from "./ArticleForm";
-import { Article, useLazyGetSummaryQuery } from "../services/article";
+import { useLazyGetSummaryQuery } from "../services/article";
 import { ArticleLinkCard } from "./ArticleLinkCard";
 import { Loader } from "./Loader";
 import { LoadError } from "./LoadError";
 import { ArticleSummary } from "./ArticleSummary";
+import { ArticleWithKey, Article } from "../interfaces/article";
 
 const Demo = (): ReactElement => {
   const [article, setArticle] = useState<Article>({
     url: "",
     summary: ""
   });
-  const [allArticles, setAllArticles] = useState<Article[]>([]);
+  const [allArticles, setAllArticles] = useState<ArticleWithKey[]>([]);
 
   // useLazyGetSummaryQuery hook from get summary query
   const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
 
   // get the articles from the local storage
   useEffect(() => {
-    const savedArticles = localStorage.getItem("articles");
-    if (savedArticles) {
-      setAllArticles(JSON.parse(savedArticles));
+    const savedArticlesStr = localStorage.getItem("articles");
+    if (!savedArticlesStr) return;
+    const savedArticles = JSON.parse(savedArticlesStr) as ArticleWithKey[];
+    // set empry key for each article
+    for (const article of savedArticles) {
+      if (!article.key) {
+        article["key"] = self.crypto.randomUUID();
+      }
     }
+    setAllArticles(savedArticles);
   }, []);
 
   // handler for submitting the article url
@@ -34,18 +41,30 @@ const Demo = (): ReactElement => {
 
     // get the article summary from the api
     const { data } = await getSummary({ articleUrl: url });
-    if (data?.summary) {
-      const newArticle = { url, summary: data.summary };
-      const updatedAllArticles = [...allArticles, newArticle];
-      setArticle(newArticle);
-      setAllArticles(updatedAllArticles);
-      // save the articles to the local storage
-      localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
-    }
+    if (!data?.summary) return;
+
+    // update the state
+    const newArticle = { url, summary: data.summary };
+    const updatedAllArticles = [
+      ...allArticles,
+      { ...newArticle, key: self.crypto.randomUUID() }
+    ];
+
+    setArticle(newArticle);
+    setAllArticles(updatedAllArticles);
+    // save the articles to the local storage
+    localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
   };
 
   const handleSetArticle = (article: Article) => {
     setArticle({ ...article });
+  };
+
+  const handleDeleteArticle = (e: React.MouseEvent, key: string) => {
+    e.stopPropagation();
+    const updatedAllArticles = allArticles.filter((item) => item.key !== key);
+    setAllArticles(updatedAllArticles);
+    localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
   };
 
   return (
@@ -57,11 +76,12 @@ const Demo = (): ReactElement => {
         </section>
         {/* brows articles */}
         <section className="flex flex-col gap-1 max-h-60 overflow-y-auto">
-          {allArticles.map((article, index) => (
+          {allArticles.map((savedArticle) => (
             <ArticleLinkCard
-              key={`link-${index}`}
-              article={article}
+              key={savedArticle.key}
+              article={savedArticle}
               handleSetArticle={handleSetArticle}
+              handleDeleteArticle={handleDeleteArticle}
             />
           ))}
         </section>

@@ -1,10 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export interface Article {
-  url: string;
-  summary: string;
-}
-
 const REACT_APP_RAPID_API_KEY = import.meta.env.VITE_REACT_APP_RAPID_API_KEY;
 
 export const articleApi = createApi({

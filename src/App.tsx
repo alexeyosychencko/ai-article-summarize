@@ -14,7 +14,7 @@ const App = (): ReactElement => {
         <Demo />
       </div>
     </main>
-  )
-}
+  );
+};
 
 export default App;

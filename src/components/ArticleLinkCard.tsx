@@ -22,8 +22,14 @@ export const ArticleLinkCard = ({
   };
 
   return (
-    <div className="link_card" onClick={() => handleSetArticle(article)}>
-      <div className="copy_btn" onClick={(e) => handleCopy(e, article.url)}>
+    <div
+      className="p-3 flex justify-start items-center flex-row bg-white border border-gray-200 gap-3 rounded-lg cursor-pointer"
+      onClick={() => handleSetArticle(article)}
+    >
+      <div
+        className="w-7 h-7 rounded-full bg-white/10 shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.2)] backdrop-blur flex justify-center items-center cursor-pointer"
+        onClick={(e) => handleCopy(e, article.url)}
+      >
         <img
           src={copied === article.url ? tick : copy}
           alt={copied === article.url ? "tick_icon" : "copy_icon"}

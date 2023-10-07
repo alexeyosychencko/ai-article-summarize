@@ -6,10 +6,8 @@ import Demo from "./components/Demo";
 const App = (): ReactElement => {
   return (
     <main>
-      <div className="main">
-        <div className="gradient" />
-      </div>
-      <div className="app">
+      <div className="bg-violet-900 w-screen	min-h-screen fixed flex "></div>
+      <div className="relative z-10 flex justify-center items-center flex-col max-w-7xl mx-auto sm:px-16 px-6">
         <Header />
         <Demo />
       </div>

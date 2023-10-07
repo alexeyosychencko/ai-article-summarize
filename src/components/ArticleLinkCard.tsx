@@ -36,7 +36,7 @@ export const ArticleLinkCard = ({
           className="w-[40%] h-[40%] object-contain"
         />
       </div>
-      <p className="flex-1 font-satoshi text-blue-700 font-medium text-sm truncate">
+      <p className="flex-1 font-satoshi text-blue-600 font-medium text-sm truncate">
         {article.url}
       </p>
       <div

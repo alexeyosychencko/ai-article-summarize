@@ -4,3 +4,5 @@ export interface Article {
 }
 
 export type ArticleWithKey = Article & { key: string };
+
+export type Summary = { summary: string };

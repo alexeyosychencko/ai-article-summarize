@@ -5,7 +5,7 @@ import { ArticleLinkCard } from "./ArticleLinkCard";
 import { Loader } from "./Loader";
 import { LoadError } from "./LoadError";
 import { ArticleSummary } from "./ArticleSummary";
-import { ArticleWithKey, Article } from "../interfaces/article";
+import { ArticleWithKey, Article } from "../types/article";
 
 const Demo = (): ReactElement => {
   const [article, setArticle] = useState<Article>({
@@ -40,7 +40,7 @@ const Demo = (): ReactElement => {
     if (existingArticle) return setArticle(existingArticle);
 
     // get the article summary from the api
-    const { data } = await getSummary({ articleUrl: url });
+    const { data } = await getSummary(url);
     if (!data?.summary) return;
 
     // update the state

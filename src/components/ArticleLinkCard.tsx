@@ -1,6 +1,6 @@
 import { ReactElement, useState } from "react";
 import { bin, copy, tick } from "../assets";
-import { Article, ArticleWithKey } from "../interfaces/article";
+import { Article, ArticleWithKey } from "../types/article";
 
 export const ArticleLinkCard = ({
   article,

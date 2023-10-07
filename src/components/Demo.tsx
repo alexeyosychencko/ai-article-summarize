@@ -5,14 +5,14 @@ import { ArticleLinkCard } from "./ArticleLinkCard";
 import { Loader } from "./Loader";
 import { LoadError } from "./LoadError";
 import { ArticleSummary } from "./ArticleSummary";
-import { ArticleWithKey, Article } from "../types/article";
+import { Article } from "../types/article";
 
 const Demo = (): ReactElement => {
   const [article, setArticle] = useState<Article>({
     url: "",
     summary: ""
   });
-  const [allArticles, setAllArticles] = useState<ArticleWithKey[]>([]);
+  const [allArticles, setAllArticles] = useState<Article[]>([]);
 
   // useLazyGetSummaryQuery hook from get summary query
   const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
@@ -21,14 +21,7 @@ const Demo = (): ReactElement => {
   useEffect(() => {
     const savedArticlesStr = localStorage.getItem("articles");
     if (!savedArticlesStr) return;
-    const savedArticles = JSON.parse(savedArticlesStr) as ArticleWithKey[];
-    // set empry key for each article
-    for (const article of savedArticles) {
-      if (!article.key) {
-        article["key"] = self.crypto.randomUUID();
-      }
-    }
-    setAllArticles(savedArticles);
+    setAllArticles(JSON.parse(savedArticlesStr) as Article[]);
   }, []);
 
   // handler for submitting the article url
@@ -62,8 +55,12 @@ const Demo = (): ReactElement => {
 
   const handleDeleteArticle = (e: React.MouseEvent, key: string) => {
     e.stopPropagation();
-    const updatedAllArticles = allArticles.filter((item) => item.key !== key);
+    const updatedAllArticles = allArticles.filter((item) => item.url !== key);
     setAllArticles(updatedAllArticles);
+    // remove selected article from the local storage
+    if (article.url === key) {
+      setArticle({ url: "", summary: "" });
+    }
     localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
   };
 
@@ -78,7 +75,7 @@ const Demo = (): ReactElement => {
         <section className="flex flex-col gap-1 max-h-60 overflow-y-auto">
           {allArticles.map((savedArticle) => (
             <ArticleLinkCard
-              key={savedArticle.key}
+              key={savedArticle.url}
               article={savedArticle}
               handleSetArticle={handleSetArticle}
               handleDeleteArticle={handleDeleteArticle}

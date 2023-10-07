@@ -3,6 +3,5 @@ export interface Article {
   summary: string;
 }
 
-export type ArticleWithKey = Article & { key: string };
-
+// response from the api
 export type Summary = { summary: string };

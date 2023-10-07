@@ -1,13 +1,13 @@
 import { ReactElement, useState } from "react";
 import { bin, copy, tick } from "../assets";
-import { Article, ArticleWithKey } from "../types/article";
+import { Article } from "../types/article";
 
 export const ArticleLinkCard = ({
   article,
   handleSetArticle,
   handleDeleteArticle
 }: {
-  article: ArticleWithKey;
+  article: Article;
   handleSetArticle: (article: Article) => void;
   handleDeleteArticle: (e: React.MouseEvent, key: string) => void;
 }): ReactElement => {
@@ -41,7 +41,7 @@ export const ArticleLinkCard = ({
       </p>
       <div
         className="flex justify-end"
-        onClick={(e) => handleDeleteArticle(e, article.key)}
+        onClick={(e) => handleDeleteArticle(e, article.url)}
       >
         <img
           src={bin}

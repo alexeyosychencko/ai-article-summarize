@@ -8,7 +8,11 @@ const Header = (): ReactElement => {
         <img src={logo} alt="sumz_logo" className="w-28 object-contain" />
         <button
           type="button"
-          onClick={() => window.open("#")}
+          onClick={() =>
+            window.open(
+              "https://github.com/alexeyosychencko/ai-article-summarize"
+            )
+          }
           className="rounded-full border border-black bg-black py-1.5 px-5 text-sm text-white transition-all hover:bg-white hover:text-black"
         >
           GitHub

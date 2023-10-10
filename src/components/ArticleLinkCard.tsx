@@ -1,15 +1,14 @@
 import { ReactElement, useState } from "react";
 import { bin, copy, tick } from "../assets";
-import { Article } from "../types/article";
 
 export const ArticleLinkCard = ({
-  article,
+  url,
   handleSetArticle,
   handleDeleteArticle
 }: {
-  article: Article;
-  handleSetArticle: (article: Article) => void;
-  handleDeleteArticle: (e: React.MouseEvent, key: string) => void;
+  url: string;
+  handleSetArticle: (url: string) => void;
+  handleDeleteArticle: (e: React.MouseEvent, url: string) => void;
 }): ReactElement => {
   const [copied, setCopied] = useState("");
 
@@ -24,24 +23,24 @@ export const ArticleLinkCard = ({
   return (
     <div
       className="p-3 flex justify-start items-center flex-row bg-white border border-gray-200 gap-3 rounded-lg cursor-pointer"
-      onClick={() => handleSetArticle(article)}
+      onClick={() => handleSetArticle(url)}
     >
       <div
         className="w-7 h-7 rounded-full bg-white/10 shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.2)] backdrop-blur flex justify-center items-center cursor-pointer"
-        onClick={(e) => handleCopy(e, article.url)}
+        onClick={(e) => handleCopy(e, url)}
       >
         <img
-          src={copied === article.url ? tick : copy}
-          alt={copied === article.url ? "tick_icon" : "copy_icon"}
+          src={copied === url ? tick : copy}
+          alt={copied === url ? "tick_icon" : "copy_icon"}
           className="w-[40%] h-[40%] object-contain"
         />
       </div>
       <p className="flex-1 font-satoshi text-blue-600 font-medium text-sm truncate">
-        {article.url}
+        {url}
       </p>
       <div
         className="flex justify-end"
-        onClick={(e) => handleDeleteArticle(e, article.url)}
+        onClick={(e) => handleDeleteArticle(e, url)}
       >
         <img
           src={bin}

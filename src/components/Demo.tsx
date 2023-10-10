@@ -8,11 +8,9 @@ import { ArticleSummary } from "./ArticleSummary";
 import { Article } from "../types/article";
 
 const Demo = (): ReactElement => {
-  const [article, setArticle] = useState<Article>({
-    url: "",
-    summary: ""
-  });
   const [allArticles, setAllArticles] = useState<Article[]>([]);
+  const [selectedUrl, setSelectedUrl] = useState<string>("");
+  const selectedArticle = allArticles.find((item) => item.url === selectedUrl);
 
   // useLazyGetSummaryQuery hook from get summary query
   const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
@@ -28,40 +26,31 @@ const Demo = (): ReactElement => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>, url: string) => {
     e.preventDefault();
 
+    setSelectedUrl(url);
     // check if the article is already in the list
     const existingArticle = allArticles.find((item) => item.url === url);
-    if (existingArticle) return setArticle(existingArticle);
+    if (existingArticle) return;
 
     // get the article summary from the api
     const { data } = await getSummary(url);
     if (!data?.summary) return;
 
     // update the state
-    const newArticle = { url, summary: data.summary };
-    const updatedAllArticles = [
-      ...allArticles,
-      { ...newArticle, key: self.crypto.randomUUID() }
-    ];
-
-    setArticle(newArticle);
+    const updatedAllArticles = [...allArticles, { url, summary: data.summary }];
     setAllArticles(updatedAllArticles);
     // save the articles to the local storage
     localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
   };
 
-  const handleSetArticle = (article: Article) => {
-    setArticle({ ...article });
+  const handleSetArticle = (url: string) => {
+    setSelectedUrl(url);
   };
 
-  const handleDeleteArticle = (e: React.MouseEvent, key: string) => {
+  const handleDeleteArticle = (e: React.MouseEvent, url: string) => {
     e.stopPropagation();
-    const updatedAllArticles = allArticles.filter((item) => item.url !== key);
-    setAllArticles(updatedAllArticles);
-    // remove selected article from the local storage
-    if (article.url === key) {
-      setArticle({ url: "", summary: "" });
-    }
-    localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
+    const clearArticles = allArticles.filter((item) => item.url !== url);
+    setAllArticles(clearArticles);
+    localStorage.setItem("articles", JSON.stringify(clearArticles));
   };
 
   return (
@@ -73,10 +62,10 @@ const Demo = (): ReactElement => {
         </section>
         {/* brows articles */}
         <section className="flex flex-col gap-1 max-h-60 overflow-y-auto">
-          {allArticles.map((savedArticle) => (
+          {allArticles.map((article) => (
             <ArticleLinkCard
-              key={savedArticle.url}
-              article={savedArticle}
+              key={article.url}
+              url={article.url}
               handleSetArticle={handleSetArticle}
               handleDeleteArticle={handleDeleteArticle}
             />
@@ -89,7 +78,9 @@ const Demo = (): ReactElement => {
           ) : error ? (
             <LoadError error={error} />
           ) : (
-            article.summary && <ArticleSummary summary={article.summary} />
+            selectedArticle && (
+              <ArticleSummary summary={selectedArticle.summary} />
+            )
           )}
         </section>
       </div>
